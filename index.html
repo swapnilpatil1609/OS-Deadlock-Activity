@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Deadlock OS | Resource Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><span class="brand-glyph">◈</span></div>
+        <div><div class="brand-name">DEADLOCK<span>OS</span></div><div class="brand-sub">RESOURCE INTELLIGENCE</div></div>
+      </div>
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="nav-list" aria-label="Main navigation">
+        <button class="nav-item active" data-page="overview"><span class="nav-icon">◫</span><span>Dashboard</span><span class="nav-arrow">↗</span></button>
+        <button class="nav-item" data-page="banker"><span class="nav-icon">▦</span><span>Banker's algorithm</span></button>
+        <button class="nav-item" data-page="request"><span class="nav-icon">⇄</span><span>Resource request</span></button>
+        <button class="nav-item" data-page="detection"><span class="nav-icon">⌕</span><span>Deadlock detection</span></button>
+        <button class="nav-item" data-page="prevention"><span class="nav-icon">⛨</span><span>Deadlock prevention</span></button>
+        <button class="nav-item" data-page="tests"><span class="nav-icon">✓</span><span>Test Cases & Analysis</span><span class="nav-count">6</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="scenario-card">
+          <div class="scenario-top"><span class="status-dot"></span><span>ACTIVE SCENARIO</span></div>
+          <label for="scenarioSelect">Simulation profile</label>
+          <select id="scenarioSelect"><option value="classic">Classic Banker · 5 × 3</option><option value="compact">Compact demo · 5 × 3</option></select>
+          <button class="btn btn-ghost btn-full" id="loadScenario">↻ &nbsp; Load scenario</button>
+          <button class="reset-link" id="resetScenario">Reset to classic defaults</button>
+        </div>
+        <div class="sidebar-footer"><span class="live-pulse"></span> LOCAL SIMULATION <span class="version">v2.0</span></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Toggle menu">☰</button>
+        <div class="breadcrumbs"><span>OPERATING SYSTEMS</span><span class="crumb-sep">/</span><strong id="crumbCurrent">OVERVIEW</strong></div>
+        <div class="topbar-right"><span class="environment"><i></i> SIMULATION MODE</span><div class="avatar">OS</div></div>
+      </header>
+
+      <section class="page active" id="page-overview">
+        <div class="hero">
+          <div class="hero-copy">
+            <div class="eyebrow"><span class="eyebrow-line"></span> DEADLOCK PREVENTION & AVOIDANCE</div>
+            <h1>Resource allocation,<br><em>under control.</em></h1>
+            <p>Inspect system safety, evaluate resource requests, and understand deadlock behavior through a live, transparent simulation.</p>
+            <div class="hero-actions"><button class="btn btn-primary" data-goto="banker">Run safety analysis <span>↗</span></button><button class="btn btn-glass" data-goto="request">Simulate a request <span>→</span></button></div>
+          </div>
+          <div class="hero-visual" aria-hidden="true">
+            <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="orbit orbit-c"></div>
+            <div class="core-node"><div class="core-inner">OS</div></div>
+            <div class="orbit-node node-a"><b>A</b><small>RESOURCE</small></div>
+            <div class="orbit-node node-b"><b>B</b><small>RESOURCE</small></div>
+            <div class="orbit-node node-c"><b>C</b><small>RESOURCE</small></div>
+            <div class="orbit-caption">RESOURCE<br>TOPOLOGY</div>
+          </div>
+          <div class="hero-grid"></div>
+        </div>
+        <div class="section-heading"><div><div class="eyebrow muted">LIVE MONITOR</div><h2>System snapshot</h2></div><span class="updated-label"><span class="status-dot"></span> Updates with every accepted operation</span></div>
+        <div class="metrics-grid" id="overviewMetrics"></div>
+        <div class="overview-grid">
+          <article class="panel panel-wide">
+            <div class="panel-heading"><div><div class="panel-eyebrow">CURRENT STATE</div><h3>Resource availability</h3></div><span class="panel-icon">▥</span></div>
+            <div id="resourceBars" class="resource-bars"></div>
+            <div class="panel-foot"><span>Available instances by resource type</span><span id="totalResourceCount" class="mono"></span></div>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><div><div class="panel-eyebrow">SAFETY ENGINE</div><h3>System integrity</h3></div><span class="panel-icon">◉</span></div>
+            <div id="safetyGauge" class="safety-gauge"></div>
+          </article>
+        </div>
+        <div class="overview-grid lower-grid">
+          <article class="panel">
+            <div class="panel-heading"><div><div class="panel-eyebrow">PROCESS TABLE</div><h3>Allocation overview</h3></div><button class="text-button" data-goto="banker">Full analysis ↗</button></div>
+            <div id="miniAllocation"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><div><div class="panel-eyebrow">SYSTEM LOG</div><h3>Recent activity</h3></div><span class="live-label"><i></i> LIVE</span></div>
+            <div class="activity-list" id="activityList"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="page" id="page-banker">
+        <div class="page-intro"><div><div class="eyebrow muted">MODULE 01 / SAFETY ANALYSIS</div><h1>Banker's algorithm</h1><p>Calculate remaining demand and determine whether every process can complete safely.</p></div><div class="intro-badge"><span>◈</span> SAFETY ENGINE</div></div>
+        <div class="formula-strip"><span class="formula-icon">ƒx</span><div><b>Need = Maximum − Allocation</b><small>For each process and each resource type.</small></div><span class="formula-note">CORE FORMULA</span></div>
+        <div class="matrix-grid">
+          <article class="panel"><div class="panel-heading"><div><div class="panel-eyebrow">MATRIX 01</div><h3>Allocation</h3></div><span class="matrix-tag">CURRENT</span></div><div id="allocationMatrix"></div></article>
+          <article class="panel"><div class="panel-heading"><div><div class="panel-eyebrow">MATRIX 02</div><h3>Maximum demand</h3></div><span class="matrix-tag">DECLARED</span></div><div id="maximumMatrix"></div></article>
+          <article class="panel"><div class="panel-heading"><div><div class="panel-eyebrow">MATRIX 03</div><h3>Remaining need</h3></div><span class="matrix-tag accent-tag">CALCULATED</span></div><div id="needMatrix"></div></article>
+        </div>
+        <article class="panel available-panel"><div class="panel-heading"><div><div class="panel-eyebrow">RESOURCE POOL</div><h3>Available vector</h3></div><span class="panel-icon">▤</span></div><div id="availableVector"></div></article>
+        <div class="action-row"><button class="btn btn-primary" id="runSafety">▶ &nbsp; Run safety algorithm</button><button class="btn btn-secondary" id="editMatrices">✎ &nbsp; Edit matrices</button><span class="action-hint">Greedy scan in P0 → Pn order; another valid safe sequence may also exist.</span></div>
+        <div id="matrixEditor" class="panel editor-panel hidden"></div>
+        <div id="safetyResult" class="result-area"></div>
+      </section>
+
+      <section class="page" id="page-request">
+        <div class="page-intro"><div><div class="eyebrow muted">MODULE 02 / DYNAMIC ALLOCATION</div><h1>Resource request</h1><p>Grant a request only when it is valid, available, and leaves the system in a safe state.</p></div><div class="intro-badge"><span>⇄</span> REQUEST GATEWAY</div></div>
+        <div class="request-layout">
+          <article class="panel request-form-panel">
+            <div class="panel-heading"><div><div class="panel-eyebrow">NEW TRANSACTION</div><h3>Configure request</h3></div><span class="panel-icon">↗</span></div>
+            <label class="field-label" for="requestProcess">Requesting process</label><select class="field-control" id="requestProcess"></select>
+            <div class="field-label">Requested instances</div><div id="requestInputs" class="request-inputs"></div>
+            <div class="request-validation" id="requestValidation"><span>i</span><p>Requests are validated in three stages: Need → Available → Safety.</p></div>
+            <button class="btn btn-primary btn-full" id="processRequest">Validate & process request <span>→</span></button>
+            <button class="btn btn-ghost btn-full" id="clearRequest">Clear request values</button>
+          </article>
+          <div class="request-right">
+            <article class="panel"><div class="panel-heading"><div><div class="panel-eyebrow">CURRENT LIMITS</div><h3>Request boundaries</h3></div></div><div id="requestLimits"></div></article>
+            <article class="panel result-panel" id="requestResult"><div class="empty-state"><div class="empty-icon">⇄</div><h3>Awaiting request</h3><p>Configure a process and resource vector, then validate the request.</p></div></article>
+          </div>
+        </div>
+        <div class="info-banner"><span>ⓘ</span><div><b>Important</b><p>A request that exceeds Need is invalid. A request that exceeds Available must wait. A request that would create an unsafe state is denied. In all rejected cases, the original state remains unchanged.</p></div></div>
+      </section>
+
+
+      <section class="page" id="page-detection">
+        <div class="page-intro"><div><div class="eyebrow muted">MODULE 04 / RUNTIME DIAGNOSIS</div><h1>Deadlock detection</h1><p>Check for an existing deadlock using outstanding requests—not maximum future demand.</p></div><div class="intro-badge danger-badge"><span>⌕</span> DIAGNOSTICS</div></div>
+        <div class="info-banner"><span>ⓘ</span><div><b>Different from Banker's safety</b><p>Detection uses Total, Allocation, and current outstanding Request. The remaining unfinished processes are reported as deadlocked candidates under the standard multiple-instance detection algorithm.</p></div></div>
+        <div class="detection-layout">
+          <article class="panel"><div class="panel-heading"><div><div class="panel-eyebrow">TEST SCENARIO</div><h3>Detection inputs</h3></div></div><label class="field-label" for="detectionScenario">Load a scenario</label><select id="detectionScenario" class="field-control"><option value="circular">Two-process circular wait</option><option value="custom">Custom scenario</option></select><div id="detectionCustom" class="hidden"><label class="field-label" for="detectionTotal">Total resources (comma-separated)</label><input id="detectionTotal" class="field-control mono" value="1,1"><div class="custom-matrices"><div><label class="field-label">Allocation rows</label><textarea id="detectionAllocation" class="field-control mono" rows="4">1,0\n0,1</textarea></div><div><label class="field-label">Outstanding Request rows</label><textarea id="detectionRequests" class="field-control mono" rows="4">0,1\n1,0</textarea></div></div><small class="field-help">Enter one comma-separated row per process. All rows must have the same number of resource types.</small></div><button class="btn btn-primary btn-full" id="runDetection">Run deadlock detection →</button></article>
+          <article class="panel"><div class="panel-heading"><div><div class="panel-eyebrow">DETECTION OUTPUT</div><h3>Runtime diagnosis</h3></div></div><div id="detectionResult" class="empty-state"><div class="empty-icon">⌕</div><h3>Ready to inspect</h3><p>Run the detector to see the calculated Available vector and any unfinished processes.</p></div></article>
+        </div>
+      </section>
+
+      <section class="page" id="page-tests">
+        <div class="page-intro"><div><div class="eyebrow muted">MODULE 06 / VERIFICATION</div><h1>Test lab</h1><p>Verify algorithm behavior against known safe, waiting, invalid, and unsafe scenarios.</p></div><div class="intro-badge"><span>✓</span> QUALITY CHECKS</div></div>
+        <div class="test-toolbar"><div><b>Automated validation suite</b><p>Each result is calculated by the same logic used by the simulator.</p></div><button class="btn btn-primary" id="runTests">▶ &nbsp; Run all tests</button></div>
+        <div id="testSummary" class="metrics-grid test-summary"></div>
+        <article class="panel"><div class="panel-heading"><div><div class="panel-eyebrow">TEST REPORT</div><h3>Scenario results</h3></div><button class="btn btn-secondary btn-small" id="downloadTests">↓ Export CSV</button></div><div id="testTable" class="table-wrap"><div class="empty-state"><div class="empty-icon">✓</div><h3>Suite not run yet</h3><p>Run all tests to produce the report.</p></div></div></article>
+      </section>
+
+      <section class="page" id="page-prevention">
+        <div class="page-intro"><div><div class="eyebrow muted">MODULE 05 / DEADLOCK PREVENTION</div><h1>Deadlock prevention</h1><p>Explore how operating systems prevent deadlocks by breaking at least one of the four necessary conditions.</p></div><div class="intro-badge warning-badge"><span>⛨</span> PREVENTION STRATEGIES</div></div>
+        <div class="info-banner"><span>ⓘ</span><div><b>Core idea</b><p>Deadlock prevention designs the system so at least one necessary deadlock condition can never hold. This differs from Banker's Algorithm, which avoids unsafe allocations by checking the system state before granting requests.</p></div></div>
+        <div class="prevention-layout">
+          <article class="panel"><div class="panel-heading"><div><div class="panel-eyebrow">SELECT A CONDITION</div><h3>Prevention strategy explorer</h3></div><span class="panel-icon">⛨</span></div>
+            <label class="field-label" for="preventionStrategy">Choose a deadlock condition</label>
+            <select class="field-control" id="preventionStrategy">
+              <option value="mutual">1. Mutual exclusion</option>
+              <option value="hold">2. Hold and wait</option>
+              <option value="noPreempt">3. No preemption</option>
+              <option value="circular">4. Circular wait</option>
+            </select>
+            <div class="prevention-checks" id="preventionChecks"></div>
+          </article>
+          <article class="panel" id="preventionExplanation"><div class="panel-heading"><div><div class="panel-eyebrow">STRATEGY DETAILS</div><h3>Mutual exclusion</h3></div><span class="matrix-tag">CONDITION 01</span></div><div class="prevention-content"></div></article>
+        </div>
+        <div class="section-heading"><div><div class="eyebrow muted">QUICK REFERENCE</div><h2>Four necessary conditions</h2></div></div>
+        <div class="concept-grid" id="preventionCards"></div>
+      </section>
+
+      <footer class="app-footer"><div><span class="footer-mark">◈</span> DEADLOCK<span>OS</span> <small>ACADEMIC SIMULATION</small></div><div>Banker safety · Resource management · Deadlock detection</div><div class="footer-right">BUILT FOR OS LAB <span>●</span></div></footer>
+    </main>
+  </div>
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
